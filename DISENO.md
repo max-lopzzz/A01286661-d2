@@ -1,5 +1,6 @@
 # Desafío 2 — Agente con A* (heurística Manhattan)
 
+**Alumna:** Hannia Mabel López Montaño  
 **Matrícula:** A01286661
 
 ## 0. Descripción del problema
@@ -183,7 +184,7 @@ Principalmente **tasa de éxito**, **razón de optimalidad** (`pasos/óptimo`), 
 
 ### 5.4 Primera comparación real (TestBed)
 
-Corrí mi A\* en los tres laberintos asignados (`resultados/laberinto_*_astar.json`) y lo comparé contra el A\*, BFS y Dijkstra de referencia en el Visualizador del TestBed.
+Corrí mi A\* en los tres laberintos asignados (`resultados/laberinto_*_astar.json`), subí los resultados al TestBed y los comparé en el Visualizador contra el Dijkstra de referencia. BFS lo comparé con mi implementación local (`comparar.py`), cuyo Dijkstra da exactamente los mismos nodos que el de referencia.
 
 **Mi A\*** (salida de `astar.py`, `tiempoMeta` de esa corrida):
 
@@ -195,21 +196,32 @@ Corrí mi A\* en los tres laberintos asignados (`resultados/laberinto_*_astar.js
 
 En los tres casos los pasos son iguales a la distancia Manhattan entre `start` y `goal` (7+7, 14+14, 24+24): existe una ruta "en escalera" que nunca se aleja de la meta, así que la heurística es exacta en `start` y la ruta encontrada es la mínima posible.
 
-**Referencia del TestBed** — *completar con los números del Visualizador:*
+**Resultados en el Visualizador del TestBed** (mi A\* contra Dijkstra de referencia; el TestBed redondea el tiempo a 2 decimales, por eso aparece 0.00 s):
 
-| Laberinto | Algoritmo | Pasos | Nodos explorados | Tiempo (s) |
+| Laberinto | Algoritmo | Pasos | Nodos explorados | Tiempo (TestBed) |
 |---|---|---|---|---|
-| Fácil | A\* (referencia) | | | |
-| Fácil | BFS (referencia) | | | |
-| Fácil | Dijkstra (referencia) | | | |
-| Medio | A\* (referencia) | | | |
-| Medio | BFS (referencia) | | | |
-| Medio | Dijkstra (referencia) | | | |
-| Difícil | A\* (referencia) | | | |
-| Difícil | BFS (referencia) | | | |
-| Difícil | Dijkstra (referencia) | | | |
+| Fácil (8×8) | **Mi A\*** | 14 | **20** | 0.00 s |
+| Fácil (8×8) | Dijkstra (referencia) | 14 | 54 | 0.00 s |
+| Medio (15×15) | **Mi A\*** | 28 | **68** | 0.00 s |
+| Medio (15×15) | Dijkstra (referencia) | 28 | 181 | 0.00 s |
+| Difícil (25×25) | **Mi A\*** | 48 | **132** | 0.00 s |
+| Difícil (25×25) | Dijkstra (referencia) | 48 | 430 | 0.00 s |
 
-*Screenshot del Visualizador:* `![Visualizador](capturas/visualizador.png)`
+Los números que muestra el TestBed para mi A\* son los mismos que reporta mi programa (el Visualizador lee mi JSON), y los del Dijkstra de referencia coinciden **exactamente** con los de mi Dijkstra local (54, 181 y 430 nodos), lo que confirma que la comparación local es fiel a la del TestBed.
+
+**Capturas del Visualizador:**
+
+![TestBed — laberinto Fácil (vista top-down)](capturas/testbed_facil.png)
+
+*Laberinto Fácil (8×8), vista top-down: mi A\* 14 pasos / 20 nodos vs. Dijkstra 14 pasos / 54 nodos.*
+
+![TestBed — laberinto Medio (vista isométrica)](capturas/testbed_medio.png)
+
+*Laberinto Medio (15×15), vista isométrica: mi A\* 28 pasos / 68 nodos vs. Dijkstra 28 pasos / 181 nodos.*
+
+![TestBed — laberinto Difícil (vista isométrica)](capturas/testbed_dificil.png)
+
+*Laberinto Difícil (25×25), vista isométrica: mi A\* 48 pasos / 132 nodos vs. Dijkstra 48 pasos / 430 nodos.*
 
 **Comparación local** (`python comparar.py laberintos/laberinto_*.json`; mismas máquina e implementación para los tres algoritmos, tiempo = mediana de 50 corridas):
 
