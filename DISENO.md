@@ -4,7 +4,7 @@
 
 ## 0. Descripción del problema
 
-El agente vive en un laberinto de **N × M** celdas (los asignados son de 11 × 11) y debe ir de `start` a `goal`.
+El agente vive en un laberinto de **N × M** celdas y debe ir de `start` a `goal`. Los laberintos asignados son tres: **Fácil (8 × 8, 10 obstáculos)**, **Medio (15 × 15, 43 obstáculos)** y **Difícil (25 × 25, 179 obstáculos)**, todos de `(0,0)` a la esquina opuesta.
 A diferencia del robotito del Desafío 1, **conoce el mapa completo antes de moverse**: lo recibe en el JSON que se descarga del TestBed.
 Con ese mapa **planea** la ruta más corta con A\* y después la entrega como una lista de celdas que el Visualizador anima.
 
@@ -30,7 +30,7 @@ Convención: `x` es la columna y `y` la fila, ambas desde **0**; el origen `(0,0
 | 2 | Determinista / estocástico | **Determinista** | Moverse a una celda libre siempre lleva a esa celda. Además el agente tampoco tiene aleatoriedad: el mismo laberinto da siempre la misma ruta. | El ambiente ya era determinista, pero el robotito elegía al azar al chocar, así que el sistema completo se comportaba de forma estocástica. Ahora **todo** es determinista. |
 | 3 | Episódico / secuencial | **Secuencial** | Cada movimiento cambia la posición y condiciona los siguientes; la ruta es una secuencia de decisiones. A\* lo maneja *planeando* la secuencia completa antes de actuar. | No cambió. Lo que cambió es que el robotito decidía *como si* fuera episódico (sin memoria) y A\* sí razona sobre la secuencia. |
 | 4 | Estático / dinámico | **Estático** | Los obstáculos y la meta no se mueven mientras el agente planea ni mientras ejecuta. Esto es lo que permite planear una sola vez y seguir el plan sin re-planear. | No cambió. |
-| 5 | Discreto / continuo | **Discreto** | Número finito de celdas (121 en 11×11), 4 acciones, tiempo en pasos. | No cambió (solo el tamaño: de 5×5 a 11×11 o cualquier N×M). |
+| 5 | Discreto / continuo | **Discreto** | Número finito de celdas (de 64 en el Fácil a 625 en el Difícil), 4 acciones, tiempo en pasos. | No cambió (solo el tamaño: de 5×5 a 8×8, 15×15, 25×25 o cualquier N×M). |
 | 6 | Un agente / multiagente | **Un agente** | Solo hay un agente en el laberinto; los obstáculos no actúan. | No cambió. |
 
 Extra: el ambiente es **conocido** (el agente conoce las reglas *y* el mapa). En el Desafío 1 era **desconocido**.
@@ -131,7 +131,7 @@ Este diseño es la base del Desafío 4, así que compara a los cuatro tipos de a
 
 | Variable | Niveles propuestos | Por qué |
 |---|---|---|
-| Tamaño del grid | 11×11, 21×21, 31×31 | Mide cómo escala cada agente (nodos explorados, tiempo, episodios de entrenamiento). |
+| Tamaño del grid | 8×8, 15×15, 25×25 (los mismos de los laberintos asignados) | Mide cómo escala cada agente (nodos explorados, tiempo, episodios de entrenamiento). |
 | Densidad de obstáculos | 10 %, 20 %, 30 % de las celdas | Más obstáculos = más rodeos; afecta muchísimo al robotito y poco a A\*. |
 | Distancia start–goal | corta / media / larga (Manhattan ≈ 25 %, 50 %, 100 % de `ancho+alto−2`) | Separa el efecto de "estar lejos" del efecto del tamaño. |
 | *(opcional)* Tipo de obstáculos | dispersos vs. muros/pasillos | Los muros generan callejones sin salida, donde la heurística engaña más. |
@@ -183,40 +183,56 @@ Principalmente **tasa de éxito**, **razón de optimalidad** (`pasos/óptimo`), 
 
 ### 5.4 Primera comparación real (TestBed)
 
-Comparé mi A\* contra el A\*, BFS y Dijkstra de referencia en el Visualizador del TestBed.
+Corrí mi A\* en los tres laberintos asignados (`resultados/laberinto_*_astar.json`) y lo comparé contra el A\*, BFS y Dijkstra de referencia en el Visualizador del TestBed.
 
-> **Completar con los números del Visualizador.** Los nombres de los laberintos son los asignados por la profesora.
+**Mi A\*** (salida de `astar.py`, `tiempoMeta` de esa corrida):
+
+| Laberinto | Tamaño | Obstáculos | Pasos | Nodos explorados | Tiempo (s) |
+|---|---|---|---|---|---|
+| Fácil | 8×8 | 10 | 14 | 20 | 0.000069 |
+| Medio | 15×15 | 43 | 28 | 68 | 0.000232 |
+| Difícil | 25×25 | 179 | 48 | 132 | 0.000482 |
+
+En los tres casos los pasos son iguales a la distancia Manhattan entre `start` y `goal` (7+7, 14+14, 24+24): existe una ruta "en escalera" que nunca se aleja de la meta, así que la heurística es exacta en `start` y la ruta encontrada es la mínima posible.
+
+**Referencia del TestBed** — *completar con los números del Visualizador:*
 
 | Laberinto | Algoritmo | Pasos | Nodos explorados | Tiempo (s) |
 |---|---|---|---|---|
-| Laberinto 1 | **Mi A\*** | | | |
-| Laberinto 1 | A\* (referencia) | | | |
-| Laberinto 1 | BFS (referencia) | | | |
-| Laberinto 1 | Dijkstra (referencia) | | | |
-| Laberinto 2 | **Mi A\*** | | | |
-| Laberinto 2 | A\* (referencia) | | | |
-| Laberinto 2 | BFS (referencia) | | | |
-| Laberinto 2 | Dijkstra (referencia) | | | |
+| Fácil | A\* (referencia) | | | |
+| Fácil | BFS (referencia) | | | |
+| Fácil | Dijkstra (referencia) | | | |
+| Medio | A\* (referencia) | | | |
+| Medio | BFS (referencia) | | | |
+| Medio | Dijkstra (referencia) | | | |
+| Difícil | A\* (referencia) | | | |
+| Difícil | BFS (referencia) | | | |
+| Difícil | Dijkstra (referencia) | | | |
 
 *Screenshot del Visualizador:* `![Visualizador](capturas/visualizador.png)`
 
-**Resultados locales** (`python comparar.py laberintos/*.json`, mediana de 50 corridas, misma máquina) como referencia de lo que se espera:
+**Comparación local** (`python comparar.py laberintos/laberinto_*.json`; mismas máquina e implementación para los tres algoritmos, tiempo = mediana de 50 corridas):
 
 | Laberinto | Algoritmo | Pasos | Nodos explorados | Tiempo (ms) |
 |---|---|---|---|---|
-| ejemplo_11x11 | A\* | 20 | 26 | 0.064 |
-| ejemplo_11x11 | BFS | 20 | 62 | 0.110 |
-| ejemplo_11x11 | Dijkstra | 20 | 62 | 0.135 |
-| sin_ruta | A\* | sin ruta | 74 | 0.175 |
-| sin_ruta | BFS | sin ruta | 74 | 0.130 |
-| sin_ruta | Dijkstra | sin ruta | 74 | 0.164 |
+| Fácil (8×8) | A\* | 14 | **20** | **0.053** |
+| Fácil (8×8) | BFS | 14 | 54 | 0.096 |
+| Fácil (8×8) | Dijkstra | 14 | 54 | 0.121 |
+| Medio (15×15) | A\* | 28 | **68** | **0.192** |
+| Medio (15×15) | BFS | 28 | 181 | 0.331 |
+| Medio (15×15) | Dijkstra | 28 | 181 | 0.425 |
+| Difícil (25×25) | A\* | 48 | **132** | **0.385** |
+| Difícil (25×25) | BFS | 48 | 430 | 0.793 |
+| Difícil (25×25) | Dijkstra | 48 | 430 | 1.009 |
+
+Caso sin ruta (`laberintos/sin_ruta.json`, 11×11 con la meta encerrada): los tres exploran las mismas **74** celdas alcanzables y reportan que no hay ruta.
 
 **Explicación de las diferencias:**
 
 - **Pasos iguales** en los tres: todos son óptimos con costo uniforme. BFS lo es porque explora por niveles (todas las celdas a distancia 1, luego 2…) y con costo 1 "nivel" = costo; Dijkstra porque expande por costo acumulado `g`; A\* porque su heurística es admisible.
 - **BFS y Dijkstra exploran casi lo mismo:** con todos los costos iguales a 1, Dijkstra ordena por `g`, que es exactamente el nivel de BFS. Son búsquedas *ciegas*: se expanden en "círculos" (rombos, en Manhattan) alrededor de `start` sin saber hacia dónde está la meta. Dijkstra suele tardar un poco más por el heap (`O(log n)` por operación) contra la cola simple de BFS (`O(1)`).
-- **A\* explora menos** (26 vs. 62 en el ejemplo, ~58 % menos) porque `h` lo orienta hacia la meta: solo expande nodos con `f ≤ costo óptimo`, y el desempate por menor `h` hace que entre los empates avance primero hacia `goal`.
-- **El tiempo** sigue a los nodos explorados en laberintos grandes; en 11×11 son microsegundos y el tiempo está dominado por el sistema (por eso se repite y se usa la mediana). Calcular `h` le agrega un poco de costo por nodo a A\*.
+- **A\* explora menos:** 20 vs. 54 (Fácil), 68 vs. 181 (Medio) y 132 vs. 430 (Difícil), entre 62 % y 69 % menos nodos, y la ventaja crece en números absolutos con el tamaño del grid (BFS/Dijkstra exploran casi todo el laberinto antes de llegar a la esquina opuesta). Esto es porque `h` lo orienta hacia la meta: solo expande nodos con `f ≤ costo óptimo`, y el desempate por menor `h` hace que entre los empates avance primero hacia `goal`.
+- **El tiempo** sigue a los nodos explorados: A\* tarda alrededor de la mitad que BFS y menos de la mitad que Dijkstra en los tres laberintos. Aun así son fracciones de milisegundo y el tiempo está dominado por el sistema (por eso se repite y se usa la mediana). Calcular `h` le agrega un poco de costo por nodo a A\*.
 - **Sin ruta, A\* no tiene ventaja:** para demostrar que no hay ruta los tres tienen que agotar *todas* las celdas alcanzables (74), así que exploran lo mismo.
 
 ---

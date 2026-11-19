@@ -59,7 +59,7 @@ Imprime una tabla Markdown con pasos, nodos explorados y tiempo (mediana de 50 c
 
 - `astar.py` — agente: lee el laberinto, corre A* y escribe el resultado.
 - `comparar.py` — BFS y Dijkstra de comparación + tabla de resultados.
-- `laberintos/` — laberintos de entrada (`ejemplo_11x11.json`, `sin_ruta.json` con la meta encerrada, y los asignados).
+- `laberintos/` — laberintos de entrada (asignados: `laberinto_Facil.json`, `laberinto_Medio.json`, `laberinto_Dificil.json`; de prueba: `ejemplo_11x11.json` y `sin_ruta.json` con la meta encerrada).
 - `resultados/` — JSON de resultado para subir al TestBed.
 - `DISENO.md` — documento de diseño, experimentación y reflexión.
 - `diagrama_agente.py` / `diagrama_agente.png` — diagrama del agente.
